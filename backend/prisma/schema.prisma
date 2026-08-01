@@ -1,0 +1,120 @@
+// Expense Splitter — Prisma schema
+// Two-table-family design: Users/Auth, and Groups + their nested expense data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  ownedGroups   Group[]       @relation("GroupOwner")
+  memberships   GroupMember[]
+
+  @@map("users")
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String   @default("")
+  ownerId     String
+  owner       User     @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members  GroupMember[]
+  people   Person[]
+  bills    Bill[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String @id @default(uuid())
+  groupId  String
+  group    Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     Role   @default(VIEWER)
+  joinedAt DateTime @default(now())
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+// A "Person" is a participant in the split — not necessarily a registered User.
+// This mirrors the mobile app exactly: people are just named entries per group.
+model Person {
+  id      String @id @default(uuid())
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  name    String
+  createdAt DateTime @default(now())
+
+  paidBills        Bill[]            @relation("BillPayer")
+  individualShares BillIndividual[]
+  multiPayerShares BillMultiPayer[]
+
+  @@map("people")
+}
+
+model Bill {
+  id          String  @id @default(uuid())
+  groupId     String
+  group       Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title       String
+  description String  @default("")
+  total       Float
+  // Null payerId means it's a multi-payer bill (see BillMultiPayer rows)
+  payerId     String?
+  payer       Person? @relation("BillPayer", fields: [payerId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  individualAmounts BillIndividual[]
+  multiPayers       BillMultiPayer[]
+
+  @@map("bills")
+}
+
+// Who owes what for a given bill (individual split mode)
+model BillIndividual {
+  id       String @id @default(uuid())
+  billId   String
+  bill     Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+  personId String
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  amount   Float
+
+  @@unique([billId, personId])
+  @@map("bill_individual_amounts")
+}
+
+// Who contributed what for a given bill (multi-payer mode)
+model BillMultiPayer {
+  id       String @id @default(uuid())
+  billId   String
+  bill     Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+  personId String
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  amount   Float
+
+  @@unique([billId, personId])
+  @@map("bill_multi_payer_amounts")
+}

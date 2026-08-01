@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Gruvbox LIGHT (default theme) */
+  --gv-bg0h: #f9f5d7;
+  --gv-bg0: #fbf1c7;
+  --gv-bg1: #ebdbb2;
+  --gv-bg2: #d5c4a1;
+  --gv-bg3: #bdae93;
+  --gv-bg4: #a89984;
+  --gv-fg0: #282828;
+  --gv-fg1: #3c3836;
+  --gv-fg2: #504945;
+  --gv-fg3: #665c54;
+  --gv-fg4: #7c6f64;
+  --gv-gray: #928374;
+  --gv-red: #9d0006;
+  --gv-green: #79740e;
+  --gv-yellow: #b57614;
+  --gv-blue: #076678;
+  --gv-purple: #8f3f71;
+  --gv-aqua: #427b58;
+  --gv-orange: #af3a03;
+}
+
+.dark {
+  /* Gruvbox HARD (dark theme) */
+  --gv-bg0h: #1d2021;
+  --gv-bg0: #282828;
+  --gv-bg1: #3c3836;
+  --gv-bg2: #504945;
+  --gv-bg3: #665c54;
+  --gv-bg4: #7c6f64;
+  --gv-fg0: #fbf1c7;
+  --gv-fg1: #ebdbb2;
+  --gv-fg2: #d5c4a1;
+  --gv-fg3: #bdae93;
+  --gv-fg4: #a89984;
+  --gv-gray: #928374;
+  --gv-red: #fb4934;
+  --gv-green: #b8bb26;
+  --gv-yellow: #fabd2f;
+  --gv-blue: #83a598;
+  --gv-purple: #d3869b;
+  --gv-aqua: #8ec07c;
+  --gv-orange: #fe8019;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--gv-bg0h);
+  color: var(--gv-fg1);
+  font-family: "Inter", sans-serif;
+  background-image:
+    linear-gradient(var(--gv-bg2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gv-bg2) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--gv-yellow);
+  color: var(--gv-bg0h);
+}
+
+/* Scrollbar, brutalist */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--gv-bg1); }
+::-webkit-scrollbar-thumb { background: var(--gv-fg4); border: 2px solid var(--gv-bg1); }
+
+/* ---- Reusable neo-brutalist primitives ---- */
+@layer components {
+  .brutal-border {
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--gv-fg1);
+  }
+
+  .brutal-card {
+    @apply brutal-border bg-gv-bg0 shadow-brutal transition-all duration-150 ease-out;
+  }
+
+  .brutal-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0px 0px var(--gv-fg1);
+  }
+
+  .brutal-btn {
+    @apply brutal-border shadow-brutal-sm font-accent font-bold uppercase tracking-wide transition-all duration-100 ease-out;
+  }
+  .brutal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px 0px var(--gv-fg1);
+  }
+  .brutal-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px 0px var(--gv-fg1);
+  }
+
+  .brutal-input {
+    @apply brutal-border bg-gv-bg0 text-gv-fg1 font-mono px-3 py-2 outline-none;
+  }
+  .brutal-input:focus {
+    box-shadow: 4px 4px 0px 0px var(--gv-yellow);
+  }
+}
