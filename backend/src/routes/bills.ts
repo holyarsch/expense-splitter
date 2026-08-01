@@ -78,7 +78,8 @@ router.post("/", requireGroupRole("EDITOR"), async (req, res) => {
 router.patch("/:billId", requireGroupRole("EDITOR"), async (req, res) => {
   const parsed = billSchema.partial({ title: true }).safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
-  const data = { title: "x", description: "", payerId: null, total: undefined, individualAmounts: {}, multiPayers: {}, ...parsed.data } as z.infer<typeof billSchema>;
+  const defaults = { title: "x", description: "", payerId: null, total: undefined, individualAmounts: {}, multiPayers: {} };
+  const data = { ...defaults, ...parsed.data } as z.infer<typeof billSchema>;
 
   const existing = await prisma.bill.findUnique({ where: { id: req.params.billId } });
   if (!existing) return res.status(404).json({ error: "Bill not found" });
@@ -115,3 +116,4 @@ router.delete("/:billId", requireGroupRole("EDITOR"), async (req, res) => {
 });
 
 export default router;
+

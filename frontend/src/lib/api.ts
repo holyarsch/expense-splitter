@@ -10,9 +10,9 @@ export class ApiError extends Error {
 
 async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
+    ...opts,
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
-    ...opts,
   });
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const body = isJson ? await res.json().catch(() => ({})) : undefined;
@@ -28,3 +28,4 @@ export const api = {
   patch: <T>(path: string, data?: unknown) => request<T>(path, { method: "PATCH", body: data ? JSON.stringify(data) : undefined }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
+

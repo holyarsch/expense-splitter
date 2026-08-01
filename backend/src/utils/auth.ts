@@ -12,7 +12,7 @@ export function signToken(payload: JwtPayload): string {
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, config.jwtSecret) as JwtPayload;
+  return jwt.verify(token, config.jwtSecret) as unknown as JwtPayload;
 }
 
 export async function hashPassword(pw: string): Promise<string> {
@@ -22,3 +22,4 @@ export async function hashPassword(pw: string): Promise<string> {
 export async function comparePassword(pw: string, hash: string): Promise<boolean> {
   return bcrypt.compare(pw, hash);
 }
+
