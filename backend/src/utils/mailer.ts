@@ -50,7 +50,7 @@ export function welcomeEmailHtml(username: string, password: string): string {
             </tr>
           </table>
           <p style="color:${fg2};font-size:12px;line-height:1.6;margin:0;">
-            For your own security, we recommend changing this password after your first sign-in.
+            Happieee dayy!!.
             If you didn't create this account, you can ignore this email.
           </p>
         </td>
